@@ -1,27 +1,18 @@
-import http from 'http';
-import app from './app.js';
-import connectDB from './config/db.js';
+import http from "http";
+import app from "./app.js";
+import dotenv from "dotenv";
 
+dotenv.config();
 const PORT = process.env.PORT || 4000;
 
-async function bootstrap() {
-    await connectDB();
+(async () => {
+  try {
+    //start server
     const server = http.createServer(app);
-
     server.listen(PORT, () => {
-        console.log(`Server running on httlp://localhost: ${PORT}`);
+      console.log(`Server running on port ${PORT}`);
     });
-
-    //graceful shutdown
-    const signals = ["SIGINT", "SIGTERM"];
-    for (const sig of signals) {
-        process.on(sig, async () => {
-            console.log(`\nReceinved ${sig}. Shutting down gracefully...`);
-            server.close(() => process.exit(0));
-        });
-    }
-}
-
-bootstrap().catch((err) => {
-    console.error("Bootstrap error:", err);
-});
+  } catch (err) {
+    console.error("❌ Failed to start app:", err);
+  }
+})();

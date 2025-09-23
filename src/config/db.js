@@ -1,29 +1,16 @@
-import mongoose from "mongoose";
+import mysql from "mysql2";
 import dotenv from "dotenv";
 
 dotenv.config();
 
-mongoose.set("strictQuery", true);
+const pool = mysql.createPool({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASS,
+  database: process.env.DB_NAME,
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
+});
 
-export default async function connectDB() {
-  const url = process.env.MONGO_URL;
-  if (!url) throw new Error("MONGO_URL is not defined ");
-
-  mongoose.connection.on("connected", () => {
-    console.log("Connected to DB");
-  });
-
-  mongoose.connection.on("error", (err) =>
-    console.log("MongoDB error connecting", err)
-  );
-  mongoose.connection.on("disconnected", () =>
-    console.log("MongoDB disconnected")
-  );
-
-  try {
-    await mongoose.connect(url);
-  } catch (err) {
-    console.log(err);
-    throw err;
-  }
-}
+export default pool.promise();
