@@ -1,10 +1,16 @@
 import express from "express";
 import routes from "./routes/index.js";
+import swaggerUi from "swagger-ui-express";
+import swaggerSpec from "./config/swagger.js";
+import { errorHandler, notFound } from "./middlewares/error.js";
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api", routes);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use(notFound);
+app.use(errorHandler);
 
 export default app;
